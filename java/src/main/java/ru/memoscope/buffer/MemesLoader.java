@@ -39,14 +39,14 @@ public class MemesLoader {
 
 
   public void startDownload() {
-
+    System.out.println("Starting to load memes");
     try {
       while (true) {
         try {
           List<Post> posts = jsonToPosts(vk.newsfeed()
               .get(user)
               .filters(NewsfeedGetFilter.POST)
-              .count(100)
+              .count(10)
               .startFrom(nextFrom)
               .executeAsString());
           post = posts.get(0);
@@ -70,15 +70,17 @@ public class MemesLoader {
       return null;
     }
     String id = String.valueOf(photo.get("id").getAsLong());
+    String ownerId = String.valueOf(photo.get("owner_id").getAsLong());
+    String photoId = id + "_" + ownerId;
     try (InputStream in = new URL(url).openStream()) {
-      String path = "../photos/" + id + ".jpg";
+      String path = "../photos/" + photoId + ".jpg";
       File directory = new File("../photos");
       if (!directory.exists()) {
         directory.mkdir();
       }
       File file = new File(path);
       if (file.exists()) {
-        System.out.println("File already created: " + id);
+        System.out.println("File already created: " + photoId);
         return path;
       }
       file.createNewFile();

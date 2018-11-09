@@ -48,7 +48,7 @@ public class Buffer extends BufferImplBase {
     int port = Integer.parseInt(args[0]);
     Buffer server = new Buffer(port);
     server.start();
-    server.blockUntilShutDown();
     server.loader.startDownload();
+    server.blockUntilShutDown();
   }
 }

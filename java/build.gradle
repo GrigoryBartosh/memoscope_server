@@ -39,6 +39,8 @@ dependencies {
     compile 'io.grpc:grpc-protobuf:1.+'
     compile "io.grpc:grpc-netty:1.+"
     compile "io.grpc:grpc-testing:1.+"
+    compile group: 'io.netty', name: 'netty-all', version: '4.0.4.Final'
+
 
     compile 'com.vk.api:sdk:0.5.12'
     compile 'org.jetbrains:annotations:15.0'
