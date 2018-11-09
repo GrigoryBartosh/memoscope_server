@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+option java_package = "ru.memoscope";
+option java_outer_classname = "DataBaseProto";
+
+message PostInfo {
+	int64 postId = 1;
+	int64 groupId = 2;
+}
+
+message StorePostRequest {
+	int64 postId = 1;
+	int64 groupId = 2;
+	string text = 3;
+	int64 timestamp = 5;
+}
+
+message StorePostResponse {
+	
+}
+
+
+message FindPostsRequest {
+	string text = 1;
+	repeated int64 groupIds = 2;
+	int64 timeFrom = 3;
+	int64 timeTo = 4;
+}
+
+message FindPostsResponse {
+	repeated PostInfo posts = 1;
+}
+
+service DataBase {
+	rpc FindPosts(FindPostsRequest) returns (FindPostsResponse) {}
+	rpc StorePost(StorePostRequest) returns (StorePostResponse) {}
+}

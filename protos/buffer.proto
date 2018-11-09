@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+option java_package = "ru.memoscope";
+option java_outer_classname = "BufferProto";
+
+message GetNewPostRequest {
+	int64 postId = 1;
+	int64 groupId = 2;
+	string text = 3;
+	repeated string picturePaths = 4;
+	int64 timestamp = 5;
+}
+
+message GetNewPostResponse {
+	
+}
+
+service Buffer {
+	rpc GetNewPost(GetNewPostRequest) returns (GetNewPostResponse) {}
+}
