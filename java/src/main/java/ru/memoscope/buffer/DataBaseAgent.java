@@ -12,22 +12,20 @@ import java.util.Properties;
 
 public class DataBaseAgent {
 
-
-  private Connection connection;
+  private String url;
+  private String user;
+  private String password;
 
   public DataBaseAgent(Properties property) {
-    try {
-      String url = property.getProperty("db.url");
-      String user = property.getProperty("db.user");
-      String password = property.getProperty("db.password");
-      connection = DriverManager.getConnection(url, user, password);
-    } catch (SQLException e) {
-      e.printStackTrace();
-    }
+      url = property.getProperty("db.url");
+      user = property.getProperty("db.user");
+      password = property.getProperty("db.password");
+
   }
 
   public Post popLatestMeme() {
-    try (Statement statement = connection.createStatement()) {
+    try (Connection connection = DriverManager.getConnection(url, user, password);
+        Statement statement = connection.createStatement()) {
       String query = "SELECT * FROM Memes " +
           "WHERE timestamp = (SELECT MIN(timestamp) FROM Memes)";
       ResultSet res = statement.executeQuery(query);
@@ -53,7 +51,8 @@ public class DataBaseAgent {
   }
 
   public void storePosts(List<Post> posts) {
-    try (Statement statement = connection.createStatement()) {
+    try (Connection connection = DriverManager.getConnection(url, user, password);
+        Statement statement = connection.createStatement()) {
       for (Post post : posts) {
         JsonArray photoPaths = new JsonArray(post.getPicturePathsList().size());
         for (String photoPath: post.getPicturePathsList()) {
@@ -65,12 +64,12 @@ public class DataBaseAgent {
             post.getGroupId(), post.getPostId(), post.getTimestamp(),
             post.getText(), photoPaths.toString().replace("\"", "\\\""));
         statement.executeUpdate(query);
-
       }
     } catch (SQLIntegrityConstraintViolationException e) {
         // repeated primary key
     } catch (SQLException e) {
       e.printStackTrace();
     }
+    System.out.println("All " + posts.size() + " stored");
   }
 }

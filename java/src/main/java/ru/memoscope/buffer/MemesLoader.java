@@ -47,7 +47,7 @@ public class MemesLoader {
           List<Post> posts = jsonToPosts(vk.newsfeed()
               .get(user)
               .filters(NewsfeedGetFilter.POST)
-              .count(10)
+              .count(50)
               .startFrom(nextFrom)
               .executeAsString());
           db.storePosts(posts);

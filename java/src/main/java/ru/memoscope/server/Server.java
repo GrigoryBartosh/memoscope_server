@@ -36,10 +36,10 @@ public class Server extends ServerImplBase {
     loadGroups(property);
     System.out.println(groups);
 
-//    ManagedChannel channel = ManagedChannelBuilder.forAddress(dbHost, dbPort)
-//        .usePlaintext(true)
-//        .build();
-//    blockingStub = newBlockingStub(channel);
+    ManagedChannel channel = ManagedChannelBuilder.forAddress(dbHost, dbPort)
+        .usePlaintext(true)
+        .build();
+    blockingStub = newBlockingStub(channel);
   }
 
   private void loadGroups(Properties property) {
@@ -64,12 +64,7 @@ public class Server extends ServerImplBase {
   public void findPosts(FindPostsRequest request,
                       StreamObserver<FindPostsResponse> responseObserver) {
     System.out.println("Got request: " + request);
-    PostInfo postInfo = PostInfo.newBuilder()
-        .setGroupId(-29534144)
-        .setPostId(9975266)
-        .build();
-    FindPostsResponse response = FindPostsResponse.newBuilder()
-        .addPosts(postInfo).build();
+    FindPostsResponse response = blockingStub.findPosts(request);
     responseObserver.onNext(response);
     responseObserver.onCompleted();
   }
