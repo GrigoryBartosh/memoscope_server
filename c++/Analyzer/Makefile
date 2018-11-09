@@ -7,7 +7,7 @@ LDFLAGS += -L/usr/local/lib `pkg-config --libs protobuf grpc++ grpc`\
 
 EXE = main
 SRCDIR = src
-PROTOSDIR = ../protos
+PROTOSDIR = ../../protos
 GENDIR = generated
 BINDIR = bin
 
