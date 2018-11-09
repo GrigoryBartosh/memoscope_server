@@ -10,7 +10,7 @@ import java.io.IOException;
 public class Buffer extends BufferImplBase {
 
   private Server server;
-  private MemesLoader loader;
+  public MemesLoader loader;
 
   public Buffer(int port) {
     server = ServerBuilder.forPort(port).addService(this).build();
@@ -30,6 +30,11 @@ public class Buffer extends BufferImplBase {
   @Override
   public void getNewPost(GetNewPostRequest request,
                          io.grpc.stub.StreamObserver<GetNewPostResponse> responseObserver) {
+    GetNewPostResponse response = GetNewPostResponse.newBuilder()
+        .setPost(loader.getLatestPost())
+        .build();
+    responseObserver.onNext(response);
+    responseObserver.onCompleted();
   }
 
 
@@ -42,7 +47,8 @@ public class Buffer extends BufferImplBase {
   public static void main(String[] args) throws InterruptedException, IOException {
     int port = Integer.parseInt(args[0]);
     Buffer server = new Buffer(port);
-    //server.start();
-    //server.blockUntilShutDown();
+    server.start();
+    server.blockUntilShutDown();
+    server.loader.startDownload();
   }
 }

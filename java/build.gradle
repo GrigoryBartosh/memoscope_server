@@ -70,21 +70,21 @@ mainClassName = 'ru.vkhack2018.Server'
 startScripts.enabled = false
 
 task server(type: CreateStartScripts) {
-    mainClassName = 'ru.vkhack2018.server.Server'
+    mainClassName = 'ru.memoscope.server.Server'
     applicationName = 'server'
     outputDir = new File(project.buildDir, 'tmp')
     classpath = jar.outputs.files + project.configurations.runtime
 }
 
 task db(type: CreateStartScripts) {
-    mainClassName = 'ru.vkhack2018.dataBase.DataBase'
+    mainClassName = 'ru.memoscope.dataBase.DataBase'
     applicationName = 'dataBase'
     outputDir = new File(project.buildDir, 'tmp')
     classpath = jar.outputs.files + project.configurations.runtime
 }
 
 task buffer(type: CreateStartScripts) {
-    mainClassName = 'ru.vkhack2018.buffer.Buffer'
+    mainClassName = 'ru.memoscope.buffer.Buffer'
     applicationName = 'buffer'
     outputDir = new File(project.buildDir, 'tmp')
     classpath = jar.outputs.files + project.configurations.runtime
