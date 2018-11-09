@@ -4,6 +4,9 @@ option java_package = "ru.memoscope";
 option java_outer_classname = "BufferProto";
 
 message GetNewPostRequest {
+}
+
+message Post {
 	int64 postId = 1;
 	int64 groupId = 2;
 	string text = 3;
@@ -12,7 +15,7 @@ message GetNewPostRequest {
 }
 
 message GetNewPostResponse {
-	
+	Post post = 1;
 }
 
 service Buffer {

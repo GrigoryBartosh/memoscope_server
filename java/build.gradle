@@ -28,7 +28,7 @@ sourceSets {
                     'build/generated/source/proto/main/grpc'
         }
         proto {
-            srcDir('../protos')
+            srcDir '../protos'
         }
     }
 }
@@ -40,8 +40,9 @@ dependencies {
     compile "io.grpc:grpc-netty:1.+"
     compile "io.grpc:grpc-testing:1.+"
 
+    compile 'com.vk.api:sdk:0.5.12'
     compile 'org.jetbrains:annotations:15.0'
-
+    compile group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1.1'
     testCompile group: 'org.junit.platform', name: 'junit-platform-runner', version: '1.0.0'
     testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.0.1'
     testRuntime group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.0.1'
@@ -76,8 +77,8 @@ task server(type: CreateStartScripts) {
 }
 
 task db(type: CreateStartScripts) {
-    mainClassName = 'ru.vkhack2018.db.DB'
-    applicationName = 'db'
+    mainClassName = 'ru.vkhack2018.dataBase.DataBase'
+    applicationName = 'dataBase'
     outputDir = new File(project.buildDir, 'tmp')
     classpath = jar.outputs.files + project.configurations.runtime
 }

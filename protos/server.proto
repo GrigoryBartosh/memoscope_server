@@ -3,6 +3,11 @@ syntax = "proto3";
 option java_package = "ru.memoscope";
 option java_outer_classname = "ServerProto";
 
+message PostInfo {
+	int64 postId = 1;
+	int64 groupId = 2;
+}
+
 
 message FindPostsRequest {
 	string text = 1;
