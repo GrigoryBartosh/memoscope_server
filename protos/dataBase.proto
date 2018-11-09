@@ -3,8 +3,7 @@ syntax = "proto3";
 option java_package = "ru.memoscope";
 option java_outer_classname = "DataBaseProto";
 
-import "server.proto";
-
+import "messages.proto";
 
 message StorePostRequest {
 	int64 postId = 1;

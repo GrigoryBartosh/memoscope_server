@@ -57,8 +57,6 @@ public class Buffer extends BufferImplBase {
     Buffer server = new Buffer();
     server.start();
     server.loader.startDownload();
-    System.out.println(server.loader.getLatestPost());
-    System.out.println(server.loader.getLatestPost().getText());
     server.blockUntilShutDown();
   }
 }

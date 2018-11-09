@@ -42,6 +42,9 @@ public class DataBaseAgent {
       for (JsonElement el: (JsonArray)new JsonParser().parse(res.getString(5))) {
         post.addPicturePaths(el.getAsString());
       }
+      String deleteQuery = String.format("DELETE FROM Memes WHERE groupId=%d AND postId=%d",
+          post.getGroupId(), post.getPostId());
+      statement.executeUpdate(deleteQuery);
       return post.build();
     } catch (SQLException e) {
       e.printStackTrace();

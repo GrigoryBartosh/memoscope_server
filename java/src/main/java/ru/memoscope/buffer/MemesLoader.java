@@ -159,7 +159,7 @@ public class MemesLoader {
         post.addPicturePaths(photoPath);
       }
       Post buildedPost = post.build();
-      if(buildedPost.getPicturePathsList().size() == 0) {
+      if (buildedPost.getPicturePathsList().size() == 0) {
         continue;
       }
       posts.add(buildedPost);
