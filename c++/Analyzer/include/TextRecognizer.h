@@ -8,7 +8,7 @@
 struct TextRecognizer
 {
 private:
-    tesseract::TessBaseAPI *tesseractApi;
+    tesseract::TessBaseAPI *_tesseractApi;
 
     std::string findTextTesseract(std::string path);
     std::string findText(const cv::Mat &img);

@@ -8,9 +8,9 @@ using cv::Point;
 
 TextRecognizer::TextRecognizer() 
 {
-    tesseractApi = new tesseract::TessBaseAPI();
-    tesseractApi->Init(NULL, "rus", tesseract::OEM_LSTM_ONLY);
-    tesseractApi->SetPageSegMode(tesseract::PSM_SINGLE_BLOCK);
+    _tesseractApi = new tesseract::TessBaseAPI();
+    _tesseractApi->Init(NULL, "rus", tesseract::OEM_LSTM_ONLY);
+    _tesseractApi->SetPageSegMode(tesseract::PSM_SINGLE_BLOCK);
 }
 
 string TextRecognizer::findTextTesseract(string path)
@@ -18,8 +18,8 @@ string TextRecognizer::findTextTesseract(string path)
     char *outText;
 
     Pix *image = pixRead(path.c_str());
-    tesseractApi->SetImage(image);
-    outText = tesseractApi->GetUTF8Text();
+    _tesseractApi->SetImage(image);
+    outText = _tesseractApi->GetUTF8Text();
 
     string res(outText);
     delete [] outText;
@@ -48,5 +48,5 @@ string TextRecognizer::recognize(const string path)
 
 TextRecognizer::~TextRecognizer() 
 {
-    tesseractApi->End();
+    _tesseractApi->End();
 }

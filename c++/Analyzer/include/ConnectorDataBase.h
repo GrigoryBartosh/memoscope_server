@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Post.h"
+#include "PostData.h"
 
 struct ConnectorDataBase
 {
@@ -9,5 +9,5 @@ private:
 public:
     ConnectorDataBase();
 
-    void addPost(const Post &post);
+    void addPost(const PostData &post);
 };

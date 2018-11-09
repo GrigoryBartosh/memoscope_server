@@ -10,13 +10,15 @@ void Controller::run()
 {
     while (true)
     {
-        Post post = connectorBuffer.getPost();
+        PostData post = _connectorBuffer.getPost();
 
-        for (const string &path : post.getImgPaths()) {
-            string text = textRecognizer.recognize(path);
+        std::cout << "1" << std::endl;
+
+        /*for (const string &path : post.getImgPaths()) {
+            string text = _textRecognizer.recognize(path);
             post.addText(text);
         }
 
-        connectorDataBase.addPost(post);
+        _connectorDataBase.addPost(post);*/
     }
 }
