@@ -105,7 +105,8 @@ string TextRecognizer::filterBySizes(const Mat &img, vector<vector<Point>> cmps)
     //TODO filter
 
     string text;
-    text += condense(img) + "\n";
+    text += condense(img);
+    text += "\n";
     text += rotateAll(img);
     return text;
 }
@@ -151,7 +152,8 @@ string TextRecognizer::bilateralFilter(const Mat &img)
     //TODO filter
 
     string text;
-    text += findCmpsAll(filtered) + "\n";
+    text += findCmpsAll(filtered);
+    text += "\n";
     text += invertColors(filtered);
     return text;
 }
@@ -159,7 +161,8 @@ string TextRecognizer::bilateralFilter(const Mat &img)
 string TextRecognizer::processImg(const Mat &img)
 {
     string text;
-    text += bilateralFilter(img) + "\n";
+    text += bilateralFilter(img);
+    text += "\n";
     text += invertColors(img);
     return text;
 }
