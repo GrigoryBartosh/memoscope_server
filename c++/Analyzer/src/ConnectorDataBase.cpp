@@ -4,6 +4,6 @@ ConnectorDataBase::ConnectorDataBase()
 {
 }
 
-void ConnectorDataBase::addPost(const Post &post)
+void ConnectorDataBase::addPost(const PostData &post)
 {
 }
