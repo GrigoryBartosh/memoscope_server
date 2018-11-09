@@ -2,6 +2,7 @@ package ru.memoscope.buffer;
 
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
+import io.grpc.stub.StreamObserver;
 import ru.memoscope.BufferGrpc.*;
 import ru.memoscope.BufferProto.*;
 
@@ -29,10 +30,12 @@ public class Buffer extends BufferImplBase {
 
   @Override
   public void getNewPost(GetNewPostRequest request,
-                         io.grpc.stub.StreamObserver<GetNewPostResponse> responseObserver) {
+                         StreamObserver<GetNewPostResponse> responseObserver) {
+    System.out.println("Got request");
     GetNewPostResponse response = GetNewPostResponse.newBuilder()
         .setPost(loader.getLatestPost())
         .build();
+
     responseObserver.onNext(response);
     responseObserver.onCompleted();
   }
