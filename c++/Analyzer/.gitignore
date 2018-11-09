@@ -1,0 +1,5 @@
+**/generated/**
+**/bin/**
+main
+*.jpg
+*.png
