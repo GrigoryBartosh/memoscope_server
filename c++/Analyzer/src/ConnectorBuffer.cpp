@@ -20,21 +20,24 @@ PostData ConnectorBuffer::Client::getPost()
 
     Status status = stub_->GetNewPost(&context, request, &reply);
 
+    std::cout << "status: " << status.ok() << std::endl;
+    std::cout << "err+msg: " << status.error_code() << " __ " << status.error_message() << std::endl;
+
     PostData post;
     post.setText(reply.post().text());
     for (int i = 0; i < reply.post().picturepaths_size(); i++) {
         post.addImgPath(reply.post().picturepaths(i));
     }
-    post.setGropId(reply.post().groupid());
+    post.setGroupId(reply.post().groupid());
     post.setPostId(reply.post().postid());
     post.setTimestamp(reply.post().timestamp());
 
     return post;
 }
 
-void readConfig(std::string &ip, std::string &port)
+void ConnectorBuffer::readConfig(std::string &ip, std::string &port)
 {
-    ifstream in("ConnectorBuffer.conf");
+    ifstream in("config/ConnectorBuffer.cfg");
 
     in >> ip;
     in >> port;
@@ -45,6 +48,7 @@ void readConfig(std::string &ip, std::string &port)
 ConnectorBuffer::ConnectorBuffer() 
 {
     string ip, port;
+    readConfig(ip, port);
     string addres = ip + ":" + port;
     _client = new Client(grpc::CreateChannel(addres, grpc::InsecureChannelCredentials()));
 }

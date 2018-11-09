@@ -18,17 +18,17 @@ public:
 
     void setText(const std::string& text);
     void addText(const std::string& text);
-    std::string& getText();
+    std::string getText() const;
 
     void addImgPath(const std::string& path);
     std::vector<std::string>& getImgPaths();
 
-    void setGropId(long long groupId);
-    long long getGropId();
+    void setGroupId(long long groupId);
+    long long getGroupId() const;
 
     void setPostId(long long postId);
-    long long getPostId();
+    long long getPostId() const;
 
     void setTimestamp(long long timestamp);
-    long long getTimestamp();
+    long long getTimestamp() const;
 };
