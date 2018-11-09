@@ -11,15 +11,14 @@ import com.vk.api.sdk.exceptions.ClientException;
 import com.vk.api.sdk.httpclient.HttpTransportClient;
 import com.vk.api.sdk.queries.newsfeed.NewsfeedGetFilter;
 import org.json.simple.parser.ParseException;
-import ru.memoscope.BufferGrpc.*;
 import ru.memoscope.BufferProto.*;
 
 import java.io.*;
 import java.net.URL;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Properties;
 
 public class MemesLoader {
   int id;
@@ -27,14 +26,16 @@ public class MemesLoader {
   VkApiClient vk;
   UserActor user;
   String nextFrom;
-  Post post;
 
-  public MemesLoader(int id, String token) {
+  private DataBaseAgent db;
+
+  public MemesLoader(int id, String token, Properties property) {
     this.id = id;
     this.token = token;
     TransportClient transportClient = HttpTransportClient.getInstance();
     vk = new VkApiClient(transportClient);
     user = new UserActor(id, token);
+    db = new DataBaseAgent(property);
   }
 
 
@@ -49,7 +50,7 @@ public class MemesLoader {
               .count(10)
               .startFrom(nextFrom)
               .executeAsString());
-          post = posts.get(0);
+          db.storePosts(posts);
           break;
         } catch (ParseException e) {
           e.printStackTrace();
@@ -81,7 +82,7 @@ public class MemesLoader {
       File file = new File(path);
       if (file.exists()) {
         System.out.println("File already created: " + photoId);
-        return path;
+        return photoId;
       }
       file.createNewFile();
       InputStream buffIn = new BufferedInputStream(in);
@@ -92,7 +93,7 @@ public class MemesLoader {
       }
       buffIn.close();
       out.close();
-      return path;
+      return photoId;
     } catch (IOException e) {
       e.printStackTrace();
     }
@@ -128,7 +129,6 @@ public class MemesLoader {
   }
 
   private List<Post> jsonToPosts(String jsonString) throws ParseException {
-    //System.out.println(jsonString);
     JsonObject obj = ((JsonObject) new JsonParser().parse(jsonString)).getAsJsonObject("response");
     JsonArray items = obj.getAsJsonArray("items");
     nextFrom = obj.get("next_from").getAsString();
@@ -158,13 +158,16 @@ public class MemesLoader {
         }
         post.addPicturePaths(photoPath);
       }
-      posts.add(post.build());
+      Post buildedPost = post.build();
+      if(buildedPost.getPicturePathsList().size() == 0) {
+        continue;
+      }
+      posts.add(buildedPost);
     }
     return posts;
   }
 
   public Post getLatestPost() {
-
-    return post;
+    return db.popLatestMeme();
   }
 }

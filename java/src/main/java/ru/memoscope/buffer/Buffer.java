@@ -6,17 +6,23 @@ import io.grpc.stub.StreamObserver;
 import ru.memoscope.BufferGrpc.*;
 import ru.memoscope.BufferProto.*;
 
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Properties;
 
 public class Buffer extends BufferImplBase {
 
   private Server server;
-  public MemesLoader loader;
+  private MemesLoader loader;
 
-  public Buffer(int port) {
+  public Buffer() throws IOException {
+    Properties property = new Properties();
+    property.load(new FileInputStream("src/main/resources/buffer.properties"));
+    int id = Integer.parseInt(property.getProperty("vk.appId"));
+    int port = Integer.parseInt(property.getProperty("buffer.port"));
+    String token = property.getProperty("vk.token");
     server = ServerBuilder.forPort(port).addService(this).build();
-    loader = new MemesLoader(6746791,
-        "2ac587c0917cc2cee6727a4476408c04bf8fd4c9b7c287ca7e1061854e47a5b0a5235d7fbb767bad919f1");
+    loader = new MemesLoader(id, token, property);
   }
 
   public void start() throws IOException {
@@ -48,10 +54,11 @@ public class Buffer extends BufferImplBase {
   }
 
   public static void main(String[] args) throws InterruptedException, IOException {
-    int port = Integer.parseInt(args[0]);
-    Buffer server = new Buffer(port);
+    Buffer server = new Buffer();
     server.start();
     server.loader.startDownload();
+    System.out.println(server.loader.getLatestPost());
+    System.out.println(server.loader.getLatestPost().getText());
     server.blockUntilShutDown();
   }
 }

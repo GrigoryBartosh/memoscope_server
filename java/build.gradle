@@ -41,6 +41,7 @@ dependencies {
     compile 'com.vk.api:sdk:0.5.12'
     compile group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1.1'
     compile group: 'org.asynchttpclient', name: 'async-http-client', version: '2.6.0'
+    compile group: 'mysql', name: 'mysql-connector-java', version: '8.0.13'
 }
 
 protobuf {
