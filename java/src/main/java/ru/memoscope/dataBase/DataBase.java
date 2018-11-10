@@ -3,12 +3,15 @@ package ru.memoscope.dataBase;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
 import io.grpc.stub.StreamObserver;
+import ru.memoscope.BufferProto;
 import ru.memoscope.DataBaseGrpc.*;
 import ru.memoscope.DataBaseProto.*;
 import ru.memoscope.MessagesProto.*;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
@@ -85,16 +88,16 @@ public class DataBase extends DataBaseImplBase {
 
         text = textAnalyzer.analyze(text);
 
-        List<PostLink> posts = dataBaseController.findPosts(text, groupIds, timeFrom, timeTo);
-
-        FindPostsResponse.Builder builder = FindPostsResponse.newBuilder();
-        for (PostLink post : posts) {
-            builder.addPosts(PostInfo.newBuilder()
+        List<PostLink> postLinks = dataBaseController.findPosts(text, groupIds, timeFrom, timeTo);
+        System.out.println(postLinks);
+        ArrayList<PostInfo> res = new ArrayList<>();
+        for (PostLink post : postLinks) {
+            res.add(PostInfo.newBuilder()
                     .setGroupId(post.getGroupId())
                     .setPostId(post.getPostId())
                     .build());
         }
-        FindPostsResponse response = builder.build();
+        FindPostsResponse response = FindPostsResponse.newBuilder().addAllPosts(res).build();
         responseObserver.onNext(response);
         responseObserver.onCompleted();
 

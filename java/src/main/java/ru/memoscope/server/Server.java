@@ -10,20 +10,20 @@ import io.grpc.stub.StreamObserver;
 import ru.memoscope.ServerGrpc.*;
 import ru.memoscope.ServerProto.*;
 import ru.memoscope.MessagesProto.*;
-
+import ru.memoscope.DataBaseGrpc.DataBaseBlockingStub;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-import static ru.memoscope.ServerGrpc.newBlockingStub;
+import static ru.memoscope.DataBaseGrpc.newBlockingStub;
 
 public class Server extends ServerImplBase {
 
   private io.grpc.Server server;
   List<Long> groups;
-  ServerBlockingStub blockingStub;
+  DataBaseBlockingStub blockingStub;
   Properties property;
 
 
