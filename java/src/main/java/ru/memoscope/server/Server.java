@@ -64,7 +64,8 @@ public class Server extends ServerImplBase {
   public void findPosts(FindPostsRequest request,
                       StreamObserver<FindPostsResponse> responseObserver) {
     System.out.println("Got request: " + request);
-    //FindPostsResponse response = blockingStub.findPosts(request);
+    String newText = request.getText().replaceAll("[^(\\d\\wА-Яа-я)]", " ");
+    //FindPostsResponse response = blockingStub.findPosts(request.toBuilder().setText(newText).build());
     FindPostsResponse response = FindPostsResponse.newBuilder()
         .addPosts(PostInfo.newBuilder().setGroupId(-92337511).setPostId(1119801).build()).build();
     responseObserver.onNext(response);

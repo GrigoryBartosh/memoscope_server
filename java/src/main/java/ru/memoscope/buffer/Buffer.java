@@ -55,11 +55,8 @@ public class Buffer extends BufferImplBase {
 
   public static void main(String[] args) throws InterruptedException, IOException {
     Buffer server = new Buffer();
-    //server.start();
+    server.start();
     server.loader.startDownload();
-    for (int i = 0; i < 10; i++) {
-      System.out.println(server.loader.getLatestPost().getPicturePathsList());
-    }
-    //server.blockUntilShutDown();
+    server.blockUntilShutDown();
   }
 }
