@@ -27,7 +27,7 @@ public class DataBaseAgent {
     try (Connection connection = DriverManager.getConnection(url, user, password);
         Statement statement = connection.createStatement()) {
       String query = "SELECT * FROM Memes " +
-          "WHERE timestamp = (SELECT MIN(timestamp) FROM Memes)";
+          "WHERE timestamp = (SELECT MAX(timestamp) FROM Memes)";
       ResultSet res = statement.executeQuery(query);
       if (!res.next()) {
         return null;
@@ -58,15 +58,23 @@ public class DataBaseAgent {
         for (String photoPath: post.getPicturePathsList()) {
           photoPaths.add(photoPath);
         }
+        String text = post.getText();
         String query = String.format("INSERT INTO Memes " +
                 "(groupId, postId, timestamp, text, photoPaths)" +
                 " VALUES (%d, %d, %d, \"%s\", \"%s\");",
             post.getGroupId(), post.getPostId(), post.getTimestamp(),
-            post.getText(), photoPaths.toString().replace("\"", "\\\""));
-        statement.executeUpdate(query);
+            text.replace("\"", "\\\""), photoPaths.toString().replace("\"", "\\\""));
+
+        try {
+          statement.executeUpdate(query);
+        } catch (SQLIntegrityConstraintViolationException e) {
+          System.out.println("Already stored in database");
+          // repeated primary key
+        } catch (SQLException e) {
+          e.printStackTrace();
+          System.out.println(query);
+        }
       }
-    } catch (SQLIntegrityConstraintViolationException e) {
-        // repeated primary key
     } catch (SQLException e) {
       e.printStackTrace();
     }

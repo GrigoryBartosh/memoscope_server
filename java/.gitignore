@@ -11,9 +11,7 @@
 *.rar
 
 **/.gradle/
-**/.idea/tasks.xml
-**/.idea/workspace.xml
-**/.idea/libraries
+/.idea/
 **/build/
 **/out/
 *~

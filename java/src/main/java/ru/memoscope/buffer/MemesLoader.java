@@ -10,7 +10,6 @@ import com.vk.api.sdk.client.actors.UserActor;
 import com.vk.api.sdk.exceptions.ClientException;
 import com.vk.api.sdk.httpclient.HttpTransportClient;
 import com.vk.api.sdk.queries.newsfeed.NewsfeedGetFilter;
-import org.json.simple.parser.ParseException;
 import ru.memoscope.BufferProto.*;
 
 import java.io.*;
@@ -20,45 +19,67 @@ import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
+import static com.google.common.primitives.Longs.max;
+
 public class MemesLoader {
-  int id;
-  String token;
-  VkApiClient vk;
-  UserActor user;
-  String nextFrom;
+  private VkApiClient vk;
+  private UserActor user;
+  private String nextFrom = null;
+  private long latestTime;
+  private int memesUpdatedCount;
+  private int memesOldCount;
 
   private DataBaseAgent db;
 
   public MemesLoader(int id, String token, Properties property) {
-    this.id = id;
-    this.token = token;
     TransportClient transportClient = HttpTransportClient.getInstance();
     vk = new VkApiClient(transportClient);
     user = new UserActor(id, token);
     db = new DataBaseAgent(property);
+    memesUpdatedCount = Integer.parseInt(property.getProperty("loader.memesUpdatedCount"));
+    memesOldCount = Integer.parseInt(property.getProperty("loader.memesOldCount"));
   }
 
 
   public void startDownload() {
     System.out.println("Starting to load memes");
     try {
-      while (true) {
+      //while (true) {
+      for (int i = 0; i < 5; i++) {
         try {
-          List<Post> posts = jsonToPosts(vk.newsfeed()
-              .get(user)
-              .filters(NewsfeedGetFilter.POST)
-              .count(50)
-              .startFrom(nextFrom)
-              .executeAsString());
+          ArrayList<Post> posts = new ArrayList<>();
+          if (nextFrom == null) {
+            posts.addAll(jsonToPosts(vk.newsfeed()
+                .get(user)
+                .filters(NewsfeedGetFilter.POST)
+                .count(memesUpdatedCount)
+                .executeAsString(), false));
+            posts.addAll(jsonToPosts(vk.newsfeed()
+                .get(user)
+                .filters(NewsfeedGetFilter.POST)
+                .count(memesOldCount)
+                .executeAsString(), true));
+          } else {
+            posts.addAll(jsonToPosts(vk.newsfeed()
+                .get(user)
+                .filters(NewsfeedGetFilter.POST)
+                .count(memesUpdatedCount)
+                .startTime((int) latestTime)
+                .executeAsString(), false));
+            posts.addAll(jsonToPosts(vk.newsfeed()
+                .get(user)
+                .filters(NewsfeedGetFilter.POST)
+                .count(memesOldCount)
+                .startFrom(nextFrom)
+                .executeAsString(), true));
+          }
+
           db.storePosts(posts);
-          break;
-        } catch (ParseException e) {
-          e.printStackTrace();
         } catch (ClientException e) {
           e.printStackTrace();
         }
-
-        Thread.sleep(1000);
+        System.out.println("\nIteration " + i + " finished\n");
+        Thread.sleep(10000);
       }
     } catch (InterruptedException e) {
       e.printStackTrace();
@@ -128,18 +149,22 @@ public class MemesLoader {
     return null;
   }
 
-  private List<Post> jsonToPosts(String jsonString) throws ParseException {
+  private List<Post> jsonToPosts(String jsonString, boolean updateNextFrom) {
     JsonObject obj = ((JsonObject) new JsonParser().parse(jsonString)).getAsJsonObject("response");
     JsonArray items = obj.getAsJsonArray("items");
-    nextFrom = obj.get("next_from").getAsString();
+    if (updateNextFrom) nextFrom = obj.get("next_from").getAsString();
     ArrayList<Post> posts = new ArrayList<>();
     for (JsonElement item : items) {
       JsonObject itemObj = item.getAsJsonObject();
+      String text = itemObj.get("text")
+          .getAsString()
+          .replaceAll("[^(\\d\\wА-Яа-я)]", " ");
       Post.Builder post = Post.newBuilder()
           .setPostId(itemObj.get("post_id").getAsLong())
           .setGroupId(itemObj.get("source_id").getAsLong())
           .setTimestamp(itemObj.get("date").getAsLong())
-          .setText(itemObj.get("text").getAsString());
+          .setText(text);
+      latestTime = max(post.getTimestamp(), latestTime);
       JsonArray attachments = itemObj.getAsJsonArray("attachments");
       if (attachments == null) {
         continue;

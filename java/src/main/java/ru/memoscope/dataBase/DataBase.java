@@ -7,6 +7,7 @@ import ru.memoscope.BufferProto;
 import ru.memoscope.DataBaseGrpc.*;
 import ru.memoscope.DataBaseProto.*;
 import ru.memoscope.ServerProto.*;
+import ru.memoscope.MessagesProto.*;
 
 import java.io.FileInputStream;
 import java.io.IOException;
