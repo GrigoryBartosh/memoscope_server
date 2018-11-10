@@ -47,7 +47,7 @@ public class MemesLoader {
     System.out.println("Starting to load memes");
     try {
       //while (true) {
-      for (int i = 0; i < 10; i++) {
+      for (int i = 0; i < 20; i++) {
         try {
           ArrayList<Post> posts = new ArrayList<>();
           if (nextFrom == null) {
