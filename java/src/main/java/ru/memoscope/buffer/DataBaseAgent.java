@@ -51,6 +51,7 @@ public class DataBaseAgent {
       statement.executeUpdate(deleteQuery);
       return post.build();
     } catch (SQLException e) {
+      // no such raw or epic fail
       e.printStackTrace();
     }
     return null;
@@ -69,7 +70,7 @@ public class DataBaseAgent {
                 " (groupId, postId, timestamp, text, photoPaths)" +
                 " VALUES (%d, %d, %d, \"%s\", \"%s\");",
             post.getGroupId(), post.getPostId(), post.getTimestamp(),
-            text.replace("\"", "\\\""), photoPaths.toString().replace("\"", "\\\""));
+            text, photoPaths.toString().replace("\"", "\\\""));
 
         try {
           statement.executeUpdate(query);
