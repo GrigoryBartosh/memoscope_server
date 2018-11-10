@@ -64,25 +64,27 @@ public class Server extends ServerImplBase {
   @Override
   public void findPosts(FindPostsRequest request,
                       StreamObserver<FindPostsResponse> responseObserver) {
-    System.out.println("Got find posts request: " + request);
+    System.out.println("Find posts request: " + request);
     String newText = request.getText().replaceAll("[^(\\d\\wА-Яа-я)]", " ");
     FindPostsResponse response = blockingStub.findPosts(request.toBuilder().setText(newText).build());
     //FindPostsResponse response = FindPostsResponse.newBuilder()
     //    .addPosts(PostInfo.newBuilder().setGroupId(-92337511).setPostId(1119801).build()).build();
     responseObserver.onNext(response);
     responseObserver.onCompleted();
+    System.out.println("Find posts request handled: " + response);
   }
 
   @Override
   public void getGroups(GetGroupsRequest request,
                         StreamObserver<GetGroupsResponse> responseObserver) {
-    System.out.println("Got get groups request: " + request);
+    System.out.println("Get groups request: " + request);
     loadGroups();
     GetGroupsResponse response = GetGroupsResponse.newBuilder()
         .addAllGroupIds(groups).build();
 
     responseObserver.onNext(response);
     responseObserver.onCompleted();
+    System.out.println("Get groups request handled: " + response);
   }
 
 
