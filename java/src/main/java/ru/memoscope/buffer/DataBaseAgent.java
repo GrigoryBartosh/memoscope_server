@@ -33,6 +33,7 @@ public class DataBaseAgent {
          Statement statement = connection.createStatement()) {
       String query = "SELECT * FROM " + tableName +
           " WHERE timestamp = (SELECT MAX(timestamp) FROM " + tableName + " WHERE sended = 0) AND sended = 0";
+      System.out.println(query);
       ResultSet res = statement.executeQuery(query);
       if (!res.next()) {
         System.out.println("No such post");
