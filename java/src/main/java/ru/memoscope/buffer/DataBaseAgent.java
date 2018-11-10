@@ -15,19 +15,20 @@ public class DataBaseAgent {
   private String url;
   private String user;
   private String password;
+  private String tableName;
 
   public DataBaseAgent(Properties property) {
-      url = property.getProperty("db.url");
-      user = property.getProperty("db.user");
-      password = property.getProperty("db.password");
-
+    url = property.getProperty("db.url");
+    user = property.getProperty("db.user");
+    password = property.getProperty("db.password");
+    tableName = property.getProperty("db.tableName");
   }
 
   public Post popLatestMeme() {
     try (Connection connection = DriverManager.getConnection(url, user, password);
-        Statement statement = connection.createStatement()) {
-      String query = "SELECT * FROM Memes " +
-          "WHERE timestamp = (SELECT MIN(timestamp) FROM Memes)";
+         Statement statement = connection.createStatement()) {
+      String query = "SELECT * FROM " + tableName +
+          " WHERE timestamp = (SELECT MAX(timestamp) FROM Memes)";
       ResultSet res = statement.executeQuery(query);
       if (!res.next()) {
         return null;
@@ -37,10 +38,10 @@ public class DataBaseAgent {
           .setPostId(res.getLong(2))
           .setTimestamp(res.getLong(3))
           .setText(res.getString(4));
-      for (JsonElement el: (JsonArray)new JsonParser().parse(res.getString(5))) {
+      for (JsonElement el : (JsonArray) new JsonParser().parse(res.getString(5))) {
         post.addPicturePaths(el.getAsString());
       }
-      String deleteQuery = String.format("DELETE FROM Memes WHERE groupId=%d AND postId=%d",
+      String deleteQuery = String.format("DELETE FROM " + tableName + " WHERE groupId=%d AND postId=%d",
           post.getGroupId(), post.getPostId());
       statement.executeUpdate(deleteQuery);
       return post.build();
@@ -52,21 +53,29 @@ public class DataBaseAgent {
 
   public void storePosts(List<Post> posts) {
     try (Connection connection = DriverManager.getConnection(url, user, password);
-        Statement statement = connection.createStatement()) {
+         Statement statement = connection.createStatement()) {
       for (Post post : posts) {
         JsonArray photoPaths = new JsonArray(post.getPicturePathsList().size());
-        for (String photoPath: post.getPicturePathsList()) {
+        for (String photoPath : post.getPicturePathsList()) {
           photoPaths.add(photoPath);
         }
-        String query = String.format("INSERT INTO Memes " +
-                "(groupId, postId, timestamp, text, photoPaths)" +
+        String text = post.getText();
+        String query = String.format("INSERT INTO " + tableName +
+                " (groupId, postId, timestamp, text, photoPaths)" +
                 " VALUES (%d, %d, %d, \"%s\", \"%s\");",
             post.getGroupId(), post.getPostId(), post.getTimestamp(),
-            post.getText(), photoPaths.toString().replace("\"", "\\\""));
-        statement.executeUpdate(query);
+            text.replace("\"", "\\\""), photoPaths.toString().replace("\"", "\\\""));
+
+        try {
+          statement.executeUpdate(query);
+        } catch (SQLIntegrityConstraintViolationException e) {
+          System.out.println("Already stored in database");
+          // repeated primary key
+        } catch (SQLException e) {
+          e.printStackTrace();
+          System.out.println(query);
+        }
       }
-    } catch (SQLIntegrityConstraintViolationException e) {
-        // repeated primary key
     } catch (SQLException e) {
       e.printStackTrace();
     }
