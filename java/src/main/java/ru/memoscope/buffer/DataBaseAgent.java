@@ -117,7 +117,7 @@ public class DataBaseAgent {
                 " VALUES (%d, %d, %d, \"%s\", \"%s\", 0);",
             post.getGroupId(), post.getPostId(), post.getTimestamp(),
             text, photoPaths.toString().replace("\"", "\\\""));
-
+        System.out.println(query);
         try {
           statement.executeUpdate(query);
         } catch (SQLIntegrityConstraintViolationException e) {

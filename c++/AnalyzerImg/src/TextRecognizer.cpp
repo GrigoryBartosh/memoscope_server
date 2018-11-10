@@ -4,6 +4,8 @@ using std::ifstream;
 using std::string;
 using std::remove;
 using std::vector;
+using std::cout;
+using std::endl;
 using cv::imread;
 using cv::Mat;
 using cv::Point;
@@ -58,9 +60,9 @@ string TextRecognizer::findTextTesseract(string path)
 
 string TextRecognizer::findText(const Mat &img)
 {
-    imwrite("t.jpg", img);
-    string res = findTextTesseract("t.jpg");
-    remove("t.jpg");
+    imwrite("t.png", img);
+    string res = findTextTesseract("t.png");
+    remove("t.png");
 
     return res;
 }
@@ -169,7 +171,25 @@ string TextRecognizer::processImg(const Mat &img)
 
 string TextRecognizer::recognize(const string path)
 {
-    Mat img = imread(path);
+    Mat img;
+
+    size_t itr = 0;
+    while (true) {
+        img = imread(path);
+        if(!img.data) {
+            cout << "failed to load image: " << path << endl;
+
+            itr++;
+            if (itr >= MAX_ITRS_FAIL_READ) {
+                return "";
+            }
+
+            usleep(MICROSECONDS_WAIT);
+        } else {
+            break;
+        }
+    }
+
     string text = processImg(img);
     return text;
 }

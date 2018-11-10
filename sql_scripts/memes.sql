@@ -1,3 +1,4 @@
+USE memes;
 DROP TABLE  IF EXISTS RawPosts, AnalizedPosts, Timestamps CASCADE;
 
 

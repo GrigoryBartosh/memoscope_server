@@ -9,8 +9,6 @@ import ru.memoscope.MessagesProto.*;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
@@ -41,6 +39,8 @@ public class DataBase extends DataBaseImplBase {
 
         textAnalyzer = new TextAnalyzer();
         dataBaseController = new DataBaseController();
+
+        System.out.println("0.constructor finished");
     }
 
     public void start() throws IOException {
@@ -48,6 +48,8 @@ public class DataBase extends DataBaseImplBase {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             server.shutdown();
         }));
+
+        System.out.println("0.started");
     }
 
     public void blockUntilShutDown() throws InterruptedException {
@@ -56,6 +58,8 @@ public class DataBase extends DataBaseImplBase {
 
     @Override
     public void storePost(StorePostRequest request, StreamObserver<StorePostResponse> responseObserver) {
+        System.out.println("1.1.new store request");
+
         String text = request.getText();
         long groupId = request.getGroupId();
         long postId = request.getPostId();
@@ -64,10 +68,16 @@ public class DataBase extends DataBaseImplBase {
         text = textAnalyzer.analyze(text);
 
         dataBaseController.addPost(text, groupId, postId, timestamp);
+        responseObserver.onNext(StorePostResponse.getDefaultInstance());
+        responseObserver.onCompleted();
+
+        System.out.println("1.2.store request processing completed");
     }
 
     @Override
     public void findPosts(FindPostsRequest request, StreamObserver<FindPostsResponse> responseObserver) {
+        System.out.println("2.1.new find request");
+
         String text = request.getText();
         List<Long> groupIds = request.getGroupIdsList();
         long timeFrom = request.getTimeFrom();
@@ -87,6 +97,8 @@ public class DataBase extends DataBaseImplBase {
         FindPostsResponse response = builder.build();
         responseObserver.onNext(response);
         responseObserver.onCompleted();
+
+        System.out.println("2.2.find request processing completed");
     }
 
     public static void main(String[] args) throws IOException, InterruptedException {
