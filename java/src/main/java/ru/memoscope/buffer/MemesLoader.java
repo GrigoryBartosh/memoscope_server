@@ -30,6 +30,8 @@ public class MemesLoader {
   private long maxTimestamp = 0L;
   private int memesUpdatedCount;
   private int memesOldCount;
+  private int maxPostsCount;
+  private int sleepTime;
 
   private DataBaseAgent db;
 
@@ -40,14 +42,15 @@ public class MemesLoader {
     db = new DataBaseAgent();
     memesUpdatedCount = Integer.parseInt(property.getProperty("loader.memesUpdatedCount"));
     memesOldCount = Integer.parseInt(property.getProperty("loader.memesOldCount"));
+    maxPostsCount = Integer.parseInt(property.getProperty("loader.maxPostsCount"));
+    sleepTime = Integer.parseInt(property.getProperty("loader.sleepTime"));
   }
 
 
   public void startDownload() {
     System.out.println("Starting to load memes");
     try {
-      //while (true) {
-      for (int i = 0; i < 10; i++) {
+      for (int i = 0; i < maxPostsCount / memesOldCount; i++) {
         try {
           ArrayList<Post> posts = new ArrayList<>();
           if (nextFrom == null) {
@@ -98,8 +101,7 @@ public class MemesLoader {
         } catch (ClientException e) {
           e.printStackTrace();
         }
-        System.out.println("\nIteration " + i + " finished\n");
-        Thread.sleep(5000);
+        Thread.sleep(sleepTime);
       }
     } catch (InterruptedException e) {
       e.printStackTrace();
