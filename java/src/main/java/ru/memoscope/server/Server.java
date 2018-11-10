@@ -63,7 +63,7 @@ public class Server extends ServerImplBase {
   @Override
   public void findPosts(FindPostsRequest request,
                       StreamObserver<FindPostsResponse> responseObserver) {
-    System.out.println("Got request: " + request);
+    System.out.println("Got find posts request: " + request);
     String newText = request.getText().replaceAll("[^(\\d\\wА-Яа-я)]", " ");
     FindPostsResponse response = blockingStub.findPosts(request.toBuilder().setText(newText).build());
     //FindPostsResponse response = FindPostsResponse.newBuilder()
@@ -75,6 +75,7 @@ public class Server extends ServerImplBase {
   @Override
   public void getGroups(GetGroupsRequest request,
                         StreamObserver<GetGroupsResponse> responseObserver) {
+    System.out.println("Got get groups request: " + request);
     GetGroupsResponse response = GetGroupsResponse.newBuilder()
         .addAllGroupIds(groups).build();
 
