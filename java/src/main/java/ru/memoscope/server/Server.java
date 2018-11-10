@@ -31,7 +31,7 @@ public class Server extends ServerImplBase {
     property.load(new FileInputStream("src/main/resources/server.properties"));
     int port = Integer.parseInt(property.getProperty("server.port"));
     int dbPort = Integer.parseInt(property.getProperty("db.port"));
-    String dbHost = property.getProperty("db.port");
+    String dbHost = property.getProperty("db.host");
     server = ServerBuilder.forPort(port).addService(this).build();
     loadGroups(property);
     System.out.println(groups);
