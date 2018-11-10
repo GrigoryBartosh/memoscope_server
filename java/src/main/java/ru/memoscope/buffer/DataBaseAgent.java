@@ -33,7 +33,7 @@ public class DataBaseAgent {
     try (Connection connection = DriverManager.getConnection(url, user, password);
          Statement statement = connection.createStatement()) {
       String query = "SELECT * FROM " + tableName +
-          " WHERE timestamp = (SELECT MAX(timestamp) FROM Memes)";
+          " WHERE timestamp = (SELECT MAX(timestamp) FROM " + tableName + ")";
       ResultSet res = statement.executeQuery(query);
       if (!res.next()) {
         return null;
