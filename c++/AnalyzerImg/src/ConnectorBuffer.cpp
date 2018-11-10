@@ -20,9 +20,6 @@ PostData ConnectorBuffer::Client::getPost()
 
     Status status = stub_->GetNewPost(&context, request, &reply);
 
-    std::cout << "status: " << status.ok() << std::endl;
-    std::cout << "err+msg: " << status.error_code() << " __ " << status.error_message() << std::endl;
-
     PostData post;
     post.setText(reply.post().text());
     for (int i = 0; i < reply.post().picturepaths_size(); i++) {

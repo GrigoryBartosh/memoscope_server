@@ -3,6 +3,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <unistd.h>
 #include <opencv2/opencv.hpp>
 #include <tesseract/baseapi.h>
 #include <leptonica/allheaders.h>
@@ -10,6 +11,9 @@
 struct TextRecognizer
 {
 private:
+    static const size_t MICROSECONDS_WAIT = 500000;
+    static const size_t MAX_ITRS_FAIL_READ = 10;
+
     tesseract::TessBaseAPI *_tesseractApi;
     std::vector<double> _rotateAngles;
     std::vector<cv::Scalar> _colorCmps;

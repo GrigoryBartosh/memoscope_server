@@ -23,8 +23,6 @@ class AnalyzerText(analyzerText_pb2_grpc.AnalyzerTextServicer):
 
         self.morph = pymorphy2.MorphAnalyzer()
 
-        print("kek")
-
     def get_characters(self, text, charectrs):
         text_res = ""
         for c in text:
@@ -60,8 +58,16 @@ class AnalyzerText(analyzerText_pb2_grpc.AnalyzerTextServicer):
         return text_res
 
     def AnalyzeText(self, request, context):
+        print("1.new request")
+
         text = request.text
+
+        print("2.analyzing start")
         text = self.analyze(text)
+        print("2.analyzing finish")
+
+        print("3.sending response")
+
         return analyzerText_pb2.AnalyzeTextResponse(text=text)
 
 def read_port():
@@ -79,6 +85,9 @@ def serve():
     analyzerText_pb2_grpc.add_AnalyzerTextServicer_to_server(AnalyzerText(), server)
     server.add_insecure_port("[::]:" + str(port))
     server.start()
+
+    print("0.started")
+
     try:
         while True:
             time.sleep(_ONE_DAY_IN_SECONDS)

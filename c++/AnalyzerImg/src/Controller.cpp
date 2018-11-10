@@ -3,6 +3,7 @@
 using std::string;
 using std::cout;
 using std::endl;
+using std::remove;
 
 Controller::Controller()
 {
@@ -10,6 +11,10 @@ Controller::Controller()
 
 void Controller::run() 
 {
+    /*string fullPath = "../../photos/456277101_-31480508.jpg";
+    string text = _textRecognizer.recognize(fullPath);
+    cout << text << endl;*/
+
     while (true)
     {
         cout << "1.request post" << endl;
@@ -20,8 +25,9 @@ void Controller::run()
             cout << "2.processing img: " << path << endl;
 
             string fullPath = "../../photos/" + path;
-            string text = _textRecognizer.recognize(path);
+            string text = _textRecognizer.recognize(fullPath);
             post.addText(text);
+            remove(fullPath.c_str());
 
             cout << "2.processed img: " << path << endl;
         }

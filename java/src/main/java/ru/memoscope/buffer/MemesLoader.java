@@ -103,7 +103,7 @@ public class MemesLoader {
       File file = new File(path);
       if (file.exists()) {
         System.out.println("File already created: " + photoId);
-        return photoId;
+        return photoId + ".jpg";
       }
       file.createNewFile();
       InputStream buffIn = new BufferedInputStream(in);
