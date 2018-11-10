@@ -176,7 +176,9 @@ public class MemesLoader {
   private List<Post> jsonToPosts(String jsonString, boolean updateNextFrom) {
     JsonObject obj = ((JsonObject) new JsonParser().parse(jsonString)).getAsJsonObject("response");
     JsonArray items = obj.getAsJsonArray("items");
-    if (updateNextFrom) nextFrom = obj.get("next_from").getAsString();
+    if (obj.get("next_from") == null) {
+      nextFrom = null;
+    } else if (updateNextFrom) nextFrom = obj.get("next_from").getAsString();
     ArrayList<Post> posts = new ArrayList<>();
     for (JsonElement item : items) {
       JsonObject itemObj = item.getAsJsonObject();
