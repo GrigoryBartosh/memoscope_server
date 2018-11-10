@@ -20,12 +20,14 @@ import java.util.List;
 import java.util.Properties;
 
 import static com.google.common.primitives.Longs.max;
+import static com.google.common.primitives.Longs.min;
 
 public class MemesLoader {
   private VkApiClient vk;
   private UserActor user;
   private String nextFrom = null;
-  private long latestTime;
+  private long minTimestamp = Integer.MAX_VALUE;
+  private long maxTimestamp = 0L;
   private int memesUpdatedCount;
   private int memesOldCount;
 
@@ -49,22 +51,40 @@ public class MemesLoader {
         try {
           ArrayList<Post> posts = new ArrayList<>();
           if (nextFrom == null) {
-            posts.addAll(jsonToPosts(vk.newsfeed()
-                .get(user)
-                .filters(NewsfeedGetFilter.POST)
-                .count(memesUpdatedCount)
-                .executeAsString(), false));
-            posts.addAll(jsonToPosts(vk.newsfeed()
-                .get(user)
-                .filters(NewsfeedGetFilter.POST)
-                .count(memesOldCount)
-                .executeAsString(), true));
+            TimestampRange range = db.getTimestampRange();
+            if (range == null) {
+              System.out.println("Can't load range\n");
+              posts.addAll(jsonToPosts(vk.newsfeed()
+                  .get(user)
+                  .filters(NewsfeedGetFilter.POST)
+                  .count(memesUpdatedCount)
+                  .executeAsString(), false));
+              posts.addAll(jsonToPosts(vk.newsfeed()
+                  .get(user)
+                  .filters(NewsfeedGetFilter.POST)
+                  .count(memesOldCount)
+                  .executeAsString(), true));
+            } else {
+              System.out.println("Loading range\n");
+              posts.addAll(jsonToPosts(vk.newsfeed()
+                  .get(user)
+                  .filters(NewsfeedGetFilter.POST)
+                  .count(memesUpdatedCount)
+                  .startTime((int) range.maxTimestamp)
+                  .executeAsString(), false));
+              posts.addAll(jsonToPosts(vk.newsfeed()
+                  .get(user)
+                  .filters(NewsfeedGetFilter.POST)
+                  .count(memesOldCount)
+                  .endTime((int) range.minTimestamp)
+                  .executeAsString(), true));
+            }
           } else {
             posts.addAll(jsonToPosts(vk.newsfeed()
                 .get(user)
                 .filters(NewsfeedGetFilter.POST)
                 .count(memesUpdatedCount)
-                .startTime((int) latestTime)
+                .startTime((int) maxTimestamp)
                 .executeAsString(), false));
             posts.addAll(jsonToPosts(vk.newsfeed()
                 .get(user)
@@ -73,7 +93,7 @@ public class MemesLoader {
                 .startFrom(nextFrom)
                 .executeAsString(), true));
           }
-
+          db.updateTimestampRange(minTimestamp, maxTimestamp);
           db.storePosts(posts);
         } catch (ClientException e) {
           e.printStackTrace();
@@ -113,6 +133,7 @@ public class MemesLoader {
         out.write(i);
       }
       buffIn.close();
+      out.flush();
       out.close();
       return photoId + ".jpg";
     } catch (IOException e) {
@@ -164,11 +185,12 @@ public class MemesLoader {
           .setGroupId(itemObj.get("source_id").getAsLong())
           .setTimestamp(itemObj.get("date").getAsLong())
           .setText(text);
-      latestTime = max(post.getTimestamp(), latestTime);
       JsonArray attachments = itemObj.getAsJsonArray("attachments");
       if (attachments == null) {
         continue;
       }
+      maxTimestamp = max(post.getTimestamp(), maxTimestamp);
+      minTimestamp = min(post.getTimestamp(), minTimestamp);
       for (JsonElement attachment : attachments) {
         JsonObject attach = attachment.getAsJsonObject();
         String type = attach.get("type").getAsString();

@@ -24,16 +24,17 @@ public class Server extends ServerImplBase {
   private io.grpc.Server server;
   List<Long> groups;
   ServerBlockingStub blockingStub;
+  Properties property;
 
 
   public Server() throws IOException {
-    Properties property = new Properties();
+    property = new Properties();
     property.load(new FileInputStream("src/main/resources/server.properties"));
     int port = Integer.parseInt(property.getProperty("server.port"));
     int dbPort = Integer.parseInt(property.getProperty("db.port"));
     String dbHost = property.getProperty("db.host");
     server = ServerBuilder.forPort(port).addService(this).build();
-    loadGroups(property);
+    loadGroups();
     System.out.println(groups);
 
     ManagedChannel channel = ManagedChannelBuilder.forAddress(dbHost, dbPort)
@@ -42,7 +43,7 @@ public class Server extends ServerImplBase {
     blockingStub = newBlockingStub(channel);
   }
 
-  private void loadGroups(Properties property) {
+  private void loadGroups() {
     groups = new ArrayList<>();
     String jsonString = property.getProperty("server.groups");
     JsonArray json = (JsonArray)new JsonParser().parse(jsonString);
@@ -76,6 +77,7 @@ public class Server extends ServerImplBase {
   public void getGroups(GetGroupsRequest request,
                         StreamObserver<GetGroupsResponse> responseObserver) {
     System.out.println("Got get groups request: " + request);
+    loadGroups();
     GetGroupsResponse response = GetGroupsResponse.newBuilder()
         .addAllGroupIds(groups).build();
 
