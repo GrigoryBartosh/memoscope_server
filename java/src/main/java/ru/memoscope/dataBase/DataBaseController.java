@@ -4,6 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DataBaseController {
+    public DataBaseController() {
+
+    }
+
     public void addPost(String text, long groupId, long postId, long timestamp) {
 
     }

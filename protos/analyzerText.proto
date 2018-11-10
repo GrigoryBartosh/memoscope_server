@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+option java_package = "ru.memoscope";
+option java_outer_classname = "AnalyzerTextProto";
+
+message AnalyzeTextRequest {
+	string text = 1;
+}
+
+message AnalyzeTextResponse {
+	string text = 1;
+}
+
+service AnalyzerText {
+	rpc AnalyzeText(AnalyzeTextRequest) returns (AnalyzeTextResponse) {}
+}

@@ -3,10 +3,9 @@ package ru.memoscope.dataBase;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
 import io.grpc.stub.StreamObserver;
-import ru.memoscope.BufferProto;
 import ru.memoscope.DataBaseGrpc.*;
 import ru.memoscope.DataBaseProto.*;
-import ru.memoscope.ServerProto.*;
+import ru.memoscope.MessagesProto.*;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -37,6 +36,9 @@ public class DataBase extends DataBaseImplBase {
     public DataBase() {
         int port = readPort();
         server = ServerBuilder.forPort(port).addService(this).build();
+
+        textAnalyzer = new TextAnalyzer();
+        dataBaseController = new DataBaseController();
     }
 
     public void start() throws IOException {
