@@ -31,11 +31,11 @@ public class MemesLoader {
 
   private DataBaseAgent db;
 
-  public MemesLoader(int id, String token, Properties property) {
+  public MemesLoader(int id, String token, Properties property) throws IOException {
     TransportClient transportClient = HttpTransportClient.getInstance();
     vk = new VkApiClient(transportClient);
     user = new UserActor(id, token);
-    db = new DataBaseAgent(property);
+    db = new DataBaseAgent();
     memesUpdatedCount = Integer.parseInt(property.getProperty("loader.memesUpdatedCount"));
     memesOldCount = Integer.parseInt(property.getProperty("loader.memesOldCount"));
   }
@@ -45,7 +45,7 @@ public class MemesLoader {
     System.out.println("Starting to load memes");
     try {
       //while (true) {
-      for (int i = 0; i < 5; i++) {
+      for (int i = 0; i < 10; i++) {
         try {
           ArrayList<Post> posts = new ArrayList<>();
           if (nextFrom == null) {
@@ -79,7 +79,7 @@ public class MemesLoader {
           e.printStackTrace();
         }
         System.out.println("\nIteration " + i + " finished\n");
-        Thread.sleep(10000);
+        Thread.sleep(5000);
       }
     } catch (InterruptedException e) {
       e.printStackTrace();
@@ -184,9 +184,9 @@ public class MemesLoader {
         post.addPicturePaths(photoPath);
       }
       Post buildedPost = post.build();
-      if (buildedPost.getPicturePathsList().size() == 0) {
-        continue;
-      }
+//      if (buildedPost.getPicturePathsList().size() == 0) {
+//        continue;
+//      }
       posts.add(buildedPost);
     }
     return posts;

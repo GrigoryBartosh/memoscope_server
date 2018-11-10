@@ -6,6 +6,9 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import ru.memoscope.BufferProto.*;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.sql.*;
 import java.util.List;
 import java.util.Properties;
@@ -17,11 +20,13 @@ public class DataBaseAgent {
   private String password;
   private String tableName;
 
-  public DataBaseAgent(Properties property) {
+  public DataBaseAgent() throws IOException {
+    Properties property = new Properties();
+    property.load(new FileInputStream("src/main/resources/database.properties"));
     url = property.getProperty("db.url");
     user = property.getProperty("db.user");
     password = property.getProperty("db.password");
-    tableName = property.getProperty("db.tableName");
+    tableName = property.getProperty("db.rawPostsTableName");
   }
 
   public Post popLatestMeme() {
@@ -46,6 +51,7 @@ public class DataBaseAgent {
       statement.executeUpdate(deleteQuery);
       return post.build();
     } catch (SQLException e) {
+      // no such raw or epic fail
       e.printStackTrace();
     }
     return null;
@@ -64,7 +70,7 @@ public class DataBaseAgent {
                 " (groupId, postId, timestamp, text, photoPaths)" +
                 " VALUES (%d, %d, %d, \"%s\", \"%s\");",
             post.getGroupId(), post.getPostId(), post.getTimestamp(),
-            text.replace("\"", "\\\""), photoPaths.toString().replace("\"", "\\\""));
+            text, photoPaths.toString().replace("\"", "\\\""));
 
         try {
           statement.executeUpdate(query);

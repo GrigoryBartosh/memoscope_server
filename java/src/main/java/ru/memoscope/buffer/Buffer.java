@@ -38,6 +38,14 @@ public class Buffer extends BufferImplBase {
   public void getNewPost(GetNewPostRequest request,
                          StreamObserver<GetNewPostResponse> responseObserver) {
     System.out.println("Got request");
+    Post post = loader.getLatestPost();
+    while (post == null) {
+      post = loader.getLatestPost();
+      try {
+        Thread.sleep(1000);
+      } catch (InterruptedException e) {
+      }
+    }
     GetNewPostResponse response = GetNewPostResponse.newBuilder()
         .setPost(loader.getLatestPost())
         .build();
