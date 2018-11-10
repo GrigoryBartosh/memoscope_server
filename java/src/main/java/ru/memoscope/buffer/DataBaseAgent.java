@@ -7,7 +7,6 @@ import com.google.gson.JsonParser;
 import ru.memoscope.BufferProto.*;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.*;
 import java.util.List;
@@ -57,10 +56,55 @@ public class DataBaseAgent {
     return null;
   }
 
+
+  public TimestampRange getTimestampRange() {
+    try (Connection connection = DriverManager.getConnection(url, user, password);
+         Statement statement = connection.createStatement()) {
+      String query = "SELECT * FROM Timestamps";
+      ResultSet res = statement.executeQuery(query);
+      if (!res.next()) {
+        return null;
+      }
+      return new TimestampRange(res.getLong(1), res.getLong(2));
+    } catch (SQLException e) {
+      // no such raw or epic fail
+      e.printStackTrace();
+    }
+    return null;
+  }
+
+  public void updateTimestampRange(long min, long max) {
+    if (getTimestampRange() == null) {
+      insertTimestampRange(min, max);
+    }
+    try (Connection connection = DriverManager.getConnection(url, user, password);
+         Statement statement = connection.createStatement()) {
+      String query = String.format("UPDATE Timestamps SET minTimestamp = %d, maxTimestamp = %d",
+          min, max);
+      statement.executeUpdate(query);
+    } catch (SQLException e) {
+      // no such raw or epic fail
+      e.printStackTrace();
+    }
+  }
+
+  public void insertTimestampRange(long min, long max) {
+    try (Connection connection = DriverManager.getConnection(url, user, password);
+         Statement statement = connection.createStatement()) {
+      String query = String.format("INSERT INTO Timestamps (minTimestamp, maxTimestamp) VALUES (%d, %d)",
+          min, max);
+      statement.executeUpdate(query);
+    } catch (SQLException e) {
+      // no such raw or epic fail
+      e.printStackTrace();
+    }
+  }
+
   public void storePosts(List<Post> posts) {
     try (Connection connection = DriverManager.getConnection(url, user, password);
          Statement statement = connection.createStatement()) {
       for (Post post : posts) {
+        System.out.println(post.getPicturePathsList());
         JsonArray photoPaths = new JsonArray(post.getPicturePathsList().size());
         for (String photoPath : post.getPicturePathsList()) {
           photoPaths.add(photoPath);
