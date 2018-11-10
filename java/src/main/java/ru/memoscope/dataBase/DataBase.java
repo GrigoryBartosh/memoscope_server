@@ -87,9 +87,22 @@ public class DataBase extends DataBaseImplBase {
         responseObserver.onCompleted();
     }
 
+    public void foo() {
+        String text = "дохлые коты летают на луну";
+
+        System.out.println(text);
+
+        text = textAnalyzer.analyze(text);
+
+        System.out.println(text);
+    }
+
     public static void main(String[] args) throws IOException, InterruptedException {
         DataBase dataBase = new DataBase();
         dataBase.start();
+
+        dataBase.foo();
+
         dataBase.blockUntilShutDown();
     }
 }
