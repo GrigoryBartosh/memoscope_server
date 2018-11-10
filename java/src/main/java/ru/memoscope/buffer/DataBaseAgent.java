@@ -28,7 +28,7 @@ public class DataBaseAgent {
     tableName = property.getProperty("db.rawPostsTableName");
   }
 
-  public Post popLatestMeme() {
+  public synchronized Post popLatestMeme() {
     try (Connection connection = DriverManager.getConnection(url, user, password);
          Statement statement = connection.createStatement()) {
       String query = "SELECT * FROM " + tableName +
@@ -103,7 +103,7 @@ public class DataBaseAgent {
     }
   }
 
-  public void storePosts(List<Post> posts) {
+  public synchronized void storePosts(List<Post> posts) {
     try (Connection connection = DriverManager.getConnection(url, user, password);
          Statement statement = connection.createStatement()) {
       for (Post post : posts) {

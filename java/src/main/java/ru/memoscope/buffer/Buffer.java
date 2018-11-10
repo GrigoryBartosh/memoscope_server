@@ -37,7 +37,7 @@ public class Buffer extends BufferImplBase {
   @Override
   public void getNewPost(GetNewPostRequest request,
                          StreamObserver<GetNewPostResponse> responseObserver) {
-    System.out.println("Got get new post request");
+    System.out.println("Get new post request");
     Post post = loader.getLatestPost();
     while (post == null) {
       post = loader.getLatestPost();
@@ -52,6 +52,7 @@ public class Buffer extends BufferImplBase {
 
     responseObserver.onNext(response);
     responseObserver.onCompleted();
+    System.out.println("Get new post request handled");
   }
 
 

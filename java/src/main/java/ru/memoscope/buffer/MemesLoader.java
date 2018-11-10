@@ -111,11 +111,12 @@ public class MemesLoader {
     if (url == null) {
       return null;
     }
+    String extension = url.substring(url.lastIndexOf("."));
     String id = String.valueOf(photo.get("id").getAsLong());
     String ownerId = String.valueOf(photo.get("owner_id").getAsLong());
     String photoId = id + "_" + ownerId;
     try (InputStream in = new URL(url).openStream()) {
-      String path = "../photos/" + photoId + ".jpg";
+      String path = "../photos/" + photoId + extension;
       File directory = new File("../photos");
       if (!directory.exists()) {
         directory.mkdir();
@@ -123,7 +124,7 @@ public class MemesLoader {
       File file = new File(path);
       if (file.exists()) {
         System.out.println("File already created: " + photoId);
-        return photoId + ".jpg";
+        return photoId + extension;
       }
       file.createNewFile();
       InputStream buffIn = new BufferedInputStream(in);
@@ -135,7 +136,7 @@ public class MemesLoader {
       buffIn.close();
       out.flush();
       out.close();
-      return photoId + ".jpg";
+      return photoId + extension;
     } catch (IOException e) {
       e.printStackTrace();
     }
