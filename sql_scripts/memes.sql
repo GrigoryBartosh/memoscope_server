@@ -1,4 +1,4 @@
-DROP TABLE  IF EXISTS RawPosts, AnaliziedPosts CASCADE;
+DROP TABLE  IF EXISTS RawPosts, AnalizedPosts CASCADE;
 
 
 CREATE TABLE RawPosts (
@@ -12,7 +12,7 @@ CREATE TABLE RawPosts (
 
 CREATE INDEX timestamp ON RawPosts(timestamp);
 
-CREATE TABLE AnaliziedPosts (
+CREATE TABLE AnalizedPosts (
 	groupId BIGINT NOT NULL,
 	postId BIGINT NOT NULL,
 	timestamp BIGINT NOT NULL,
@@ -20,6 +20,6 @@ CREATE TABLE AnaliziedPosts (
 	PRIMARY KEY (groupId, postId)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT;
 
-CREATE INDEX timestamp ON AnaliziedPosts(timestamp);
-CREATE INDEX groupId ON AnaliziedPosts(groupId);
-CREATE FULLTEXT INDEX text ON AnaliziedPosts(text);
+CREATE INDEX timestamp ON AnalizedPosts(timestamp);
+CREATE INDEX groupId ON AnalizedPosts(groupId);
+CREATE FULLTEXT INDEX text ON AnalizedPosts(text);

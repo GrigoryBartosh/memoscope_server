@@ -33,7 +33,7 @@ public class DataBase extends DataBaseImplBase {
         return port;
     }
 
-    public DataBase() {
+    public DataBase() throws IOException {
         int port = readPort();
         server = ServerBuilder.forPort(port).addService(this).build();
 

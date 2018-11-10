@@ -31,11 +31,11 @@ public class MemesLoader {
 
   private DataBaseAgent db;
 
-  public MemesLoader(int id, String token, Properties property) {
+  public MemesLoader(int id, String token, Properties property) throws IOException {
     TransportClient transportClient = HttpTransportClient.getInstance();
     vk = new VkApiClient(transportClient);
     user = new UserActor(id, token);
-    db = new DataBaseAgent(property);
+    db = new DataBaseAgent();
     memesUpdatedCount = Integer.parseInt(property.getProperty("loader.memesUpdatedCount"));
     memesOldCount = Integer.parseInt(property.getProperty("loader.memesOldCount"));
   }
