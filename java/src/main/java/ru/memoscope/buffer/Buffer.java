@@ -47,7 +47,7 @@ public class Buffer extends BufferImplBase {
       }
     }
     GetNewPostResponse response = GetNewPostResponse.newBuilder()
-        .setPost(loader.getLatestPost())
+        .setPost(post)
         .build();
 
     responseObserver.onNext(response);

@@ -114,7 +114,7 @@ public class MemesLoader {
       }
       buffIn.close();
       out.close();
-      return photoId;
+      return photoId + ".jpg";
     } catch (IOException e) {
       e.printStackTrace();
     }
