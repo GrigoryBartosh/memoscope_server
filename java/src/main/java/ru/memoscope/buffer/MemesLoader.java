@@ -76,6 +76,7 @@ public class MemesLoader {
 
           } else {
             System.out.println("Dont wanna load range\n");
+            System.out.println("\n\nMIN: " + minTimestamp);
             posts.addAll(jsonToPosts(vk.newsfeed()
                 .get(user)
                 .filters(NewsfeedGetFilter.POST)
