@@ -15,6 +15,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import static java.lang.Math.min;
+
 public class DataBase extends DataBaseImplBase {
     private Server server;
     private TextAnalyzer textAnalyzer;
@@ -97,7 +99,8 @@ public class DataBase extends DataBaseImplBase {
                     .setPostId(post.getPostId())
                     .build());
         }
-        FindPostsResponse response = FindPostsResponse.newBuilder().addAllPosts(res).build();
+        FindPostsResponse response = FindPostsResponse.newBuilder()
+            .addAllPosts(res.subList(0, min(res.size(), 10))).build();
         responseObserver.onNext(response);
         responseObserver.onCompleted();
 
