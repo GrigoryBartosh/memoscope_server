@@ -7,6 +7,7 @@ import jamspell
 import pymorphy2
 
 _ONE_DAY_IN_SECONDS = 60 * 60 * 24
+_MIN_LENGTH = 3
 
 class AnalyzerText(analyzerText_pb2_grpc.AnalyzerTextServicer):
     simple_charectrs = None
@@ -27,13 +28,17 @@ class AnalyzerText(analyzerText_pb2_grpc.AnalyzerTextServicer):
         text_res = ""
         for c in text:
             if c in charectrs:
+                if len(text_res) > 0:
+                    if text_res[-1].isdigit() != c.isdigit():
+                        text_res += " "
+
                 text_res += c
                 continue
-            if c.isspace:
+            if c.isspace():
                 text_res += " "
                 continue
 
-        text_res = " ".join(text_res.split())
+        text_res = " ".join(list(filter(lambda w: (w.isdigit()) or (len(w) >= _MIN_LENGTH), text_res.split())))
         text_res = text_res.lower()
         return text_res
 
