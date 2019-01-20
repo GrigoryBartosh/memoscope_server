@@ -34,7 +34,7 @@ public class TextAnalyzer extends AnalyzerTextGrpc.AnalyzerTextImplBase {
         readConfig();
 
         ManagedChannel channel = ManagedChannelBuilder.forAddress(host, port)
-                .usePlaintext(true)
+                .usePlaintext()
                 .build();
         blockingStub = newBlockingStub(channel);
     }

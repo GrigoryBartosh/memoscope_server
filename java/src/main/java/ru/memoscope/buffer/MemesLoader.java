@@ -14,10 +14,7 @@ import ru.memoscope.BufferProto.*;
 
 import java.io.*;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 
 import static com.google.common.primitives.Longs.max;
 import static com.google.common.primitives.Longs.min;
@@ -46,13 +43,13 @@ public class MemesLoader {
   }
 
 
-  private TimestampRange loadRange() {
-    TimestampRange range = db.getTimestampRange();
-    if (range != null) {
+  private Optional<TimestampRange> loadRange() {
+    Optional<TimestampRange> rangeO = db.getTimestampRange();
+    rangeO.ifPresent(range -> {
       minTimestamp = range.minTimestamp;
       maxTimestamp = range.maxTimestamp;
-    }
-    return range;
+    });
+    return rangeO;
   }
 
   public void startDownload() {
@@ -61,7 +58,7 @@ public class MemesLoader {
       for (int i = 0; i < maxPostsCount / memesOldCount; i++) {
         try {
           ArrayList<Post> posts = new ArrayList<>();
-          if (maxTimestamp == 0L && loadRange() == null) {
+          if (maxTimestamp == 0L && !loadRange().isPresent()) {
             System.out.println("Can't load range\n");
             posts.addAll(jsonToPosts(vk.newsfeed()
                 .get(user)

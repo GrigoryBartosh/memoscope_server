@@ -1,16 +1,12 @@
 package ru.memoscope.dataBase;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
-import ru.memoscope.BufferProto;
-
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 public class DataBaseController {
 
@@ -30,14 +26,15 @@ public class DataBaseController {
     }
 
     public void addPost(String text, long groupId, long postId, long timestamp) {
-        try (Connection connection = DriverManager.getConnection(url, user, password);
-             Statement statement = connection.createStatement()) {
-            String query = String.format("INSERT INTO " + tableName +
-                " (groupId, postId, timestamp, text)" +
-                " VALUES (%d, %d, %d, \"%s\")",
-                groupId, postId, timestamp, text);
-            System.out.println(query);
-            statement.executeUpdate(query);
+        try {
+            Connection connection = DriverManager.getConnection(url, user, password);
+            PreparedStatement statement = connection.prepareStatement(
+                    "INSERT INTO " + tableName + " (groupId, postId, timestamp, text) VALUES (?, ?, ?, ?)");
+            statement.setLong(1, groupId);
+            statement.setLong(2, postId);
+            statement.setLong(3, timestamp);
+            statement.setString(4, text);
+            statement.execute();
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -46,27 +43,38 @@ public class DataBaseController {
 
     public List<PostLink> findPosts(String text, List<Long> groupIds, long timeFrom, long timeTo) {
         List<PostLink> links = new ArrayList<>();
-        try (Connection connection = DriverManager.getConnection(url, user, password);
-             Statement statement = connection.createStatement()) {
-            StringBuilder query = new StringBuilder(String.format("SELECT postId, groupId FROM " + tableName +
-                    " WHERE timestamp >= %d AND timestamp <= %d " +
-                    "AND MATCH text AGAINST (\'%s\')",
-                timeFrom, timeTo, text));
-            if (groupIds.size() != 0) {
-                query.append(" AND (");
-                boolean first = true;
-                for (Long groupId : groupIds) {
-                    if (first) {
-                        first = false;
-                        query.append("groupId = ").append(groupId);
-                    } else {
-                        query.append(" OR groupId = ").append(groupId);
+        try {
+            Connection connection = DriverManager.getConnection(url, user, password);
+            PreparedStatement statement;
+            if (groupIds.isEmpty()) {
+                statement = connection.prepareStatement(
+                        "SELECT postId, groupId FROM "
+                                + tableName
+                                + " WHERE timestamp BETWEEN ? AND ?"
+                                + " AND MATCH text AGAINST (?)");
+            } else {
+                StringBuilder builder = new StringBuilder("SELECT postId, groupId FROM "
+                        + tableName
+                        + " WHERE timestamp BETWEEN ? AND ?"
+                        + " AND MATCH text AGAINST (?)"
+                        + " AND groupId in (");
+                for (int i = 0; i < groupIds.size(); ++i) {
+                    if (i != 0) {
+                        builder.append(", ");
                     }
+                    builder.append('?');
                 }
-                query.append(")");
+                builder.append(")");
+                statement = connection.prepareStatement(builder.toString());
+                for (int i = 0; i < groupIds.size(); ++i) {
+                    // yikes...
+                    statement.setLong(4 + i, groupIds.get(i));
+                }
             }
-            System.out.println(query.toString());
-            ResultSet res = statement.executeQuery(query.toString());
+            statement.setLong(1, timeFrom);
+            statement.setLong(2, timeTo);
+            statement.setString(3, text);
+            ResultSet res = statement.executeQuery();
             while (res.next()) {
                 PostLink link = new PostLink(res.getLong("groupId"), res.getLong("postId"));
                 links.add(link);

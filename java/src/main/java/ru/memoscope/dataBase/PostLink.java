@@ -1,24 +1,18 @@
 package ru.memoscope.dataBase;
 
+import java.util.Objects;
+
 public class PostLink {
-    private long groupId;
-    private long postId;
+    private final long groupId;
+    private final long postId;
 
     public PostLink(long groupId, long postId) {
         this.groupId = groupId;
         this.postId = postId;
     }
 
-    public void setGroupId(long groupId) {
-        this.groupId = groupId;
-    }
-
     public long getGroupId() {
         return groupId;
-    }
-
-    public void setPostId(long postId) {
-        this.postId = postId;
     }
 
     public long getPostId() {
@@ -27,6 +21,20 @@ public class PostLink {
 
     @Override
     public String toString() {
-        return String.format("{groupId: %s, postId: %s}\n", groupId, postId);
+        return String.format("{groupId: %s, postId: %s}", groupId, postId);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        PostLink postLink = (PostLink) o;
+        return groupId == postLink.groupId &&
+                postId == postLink.postId;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(groupId, postId);
     }
 }
